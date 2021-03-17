@@ -1,10 +1,12 @@
 const Product = require('../models/product');
+const { readCookie } = require('../utils/getCookie');
 
 const getAddProduct = (req, res, next) => {
   res.render('admin/add-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editMode: false,
+    isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
   });
 };
 
@@ -37,6 +39,7 @@ const getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editMode: true,
         product: product,
+        isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
       });
     })
     .catch(err => console.log(err));
@@ -87,6 +90,7 @@ const getProductList = (req, res, next) => {
         productList: products,
         pageTitle: 'Admin Products',
         path: '/admin/product-list',
+        isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
       });
     })
     .catch(err => console.log(err));
