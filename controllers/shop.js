@@ -1,6 +1,5 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
-const { readCookie } = require('../utils/getCookie');
 
 const getProductList = (req, res, next) => {
   Product.find()

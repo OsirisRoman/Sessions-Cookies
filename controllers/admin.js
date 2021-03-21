@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const { readCookie } = require('../utils/getCookie');
 
 const getAddProduct = (req, res, next) => {
   res.render('admin/add-product', {

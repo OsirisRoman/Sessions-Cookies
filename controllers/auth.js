@@ -1,5 +1,3 @@
-const { readCookie } = require('../utils/getCookie');
-
 const getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
@@ -10,7 +8,14 @@ const getLogin = (req, res, next) => {
 
 const postLogin = (req, res, next) => {
   req.session.isLoggedIn = true;
-  res.redirect('/');
+  const userId = '604f832dbcd9ee1ef0ed33ce';
+  req.session.user = userId;
+  req.session.save(err => {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect('/');
+  });
 };
 
 const postLogout = (req, res, next) => {

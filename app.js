@@ -65,7 +65,10 @@ app.use(
 //and from now on it will run ok.
 /////////////////////////////////////////////////
 app.use((req, res, next) => {
-  const userID = '604f832dbcd9ee1ef0ed33ce';
+  if (!req.session.user) {
+    return next();
+  }
+  const userID = req.session.user;
   User.findById(userID)
     .then(user => {
       req.user = user;

@@ -9,7 +9,7 @@
         <header class="card__header">
           <h1 class="product__title"><%= product.name %></h1>
         </header>
-        <div class="card__image" onclick="location.href='/product-details'">
+        <div class="card__image" <% if(isAuthenticated) {%> onclick="location.href='/product-details'" <% } %> >
           <img
             src="<%= product.imageUrl %>"
             alt="<%= product.name %>"
@@ -23,7 +23,9 @@
         </div>
         <div class="card__actions">
           <a class="btn" href="/product-details/<%= product._id %>">See Details</a>
-          <%- include('../includes/add-to-cart.ejs', {product: product}) %>
+          <% if(isAuthenticated) {%>
+            <%- include('../includes/add-to-cart.ejs', {product: product}) %>
+          <% } %>
         </div>
       </article>
       <% } %>
