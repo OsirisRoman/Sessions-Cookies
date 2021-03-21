@@ -4,20 +4,26 @@ const getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login Page',
-    isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
 const postLogin = (req, res, next) => {
-  //With HttpOnly directive we avoid our cookie to be accessed
-  //From the client side console avoiding scripting hacking
-  //If you run in the console document.cookie, with this
-  //flag the cookie will not appear in the result.
-  res.setHeader('Set-Cookie', 'isLoggedIn=true; HttpOnly');
+  req.session.isLoggedIn = true;
   res.redirect('/');
+};
+
+const postLogout = (req, res, next) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect('/');
+  });
 };
 
 module.exports = {
   getLogin,
   postLogin,
+  postLogout,
 };

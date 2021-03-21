@@ -6,7 +6,7 @@ const getAddProduct = (req, res, next) => {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editMode: false,
-    isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -39,7 +39,7 @@ const getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editMode: true,
         product: product,
-        isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch(err => console.log(err));
@@ -90,7 +90,7 @@ const getProductList = (req, res, next) => {
         productList: products,
         pageTitle: 'Admin Products',
         path: '/admin/product-list',
-        isAuthenticated: readCookie(req.get('Cookie'), 'isLoggedIn'),
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch(err => console.log(err));
