@@ -1,3 +1,6 @@
+const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+
 const getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
@@ -7,15 +10,28 @@ const getLogin = (req, res, next) => {
 };
 
 const postLogin = (req, res, next) => {
-  req.session.isLoggedIn = true;
-  const userId = '604f832dbcd9ee1ef0ed33ce';
-  req.session.user = userId;
-  req.session.save(err => {
-    if (err) {
+  User.findOne({ email: req.body.email })
+    .then(userDoc => {
+      if (!userDoc) {
+        return res.redirect('/Signup');
+      }
+      bcrypt.compare(req.body.password, userDoc.password).then(doMatch => {
+        if (!doMatch) {
+          return res.redirect('/login');
+        }
+        req.session.isLoggedIn = true;
+        req.session.user = userDoc._id;
+        return req.session.save(err => {
+          if (err) {
+            console.log(err);
+          }
+          res.redirect('/');
+        });
+      });
+    })
+    .catch(err => {
       console.log(err);
-    }
-    res.redirect('/');
-  });
+    });
 };
 
 const postLogout = (req, res, next) => {
@@ -27,8 +43,39 @@ const postLogout = (req, res, next) => {
   });
 };
 
+const getSignup = (req, res, next) => {
+  res.render('auth/signup', {
+    path: '/signup',
+    pageTitle: 'Signup Page',
+    isAuthenticated: req.session.isLoggedIn,
+  });
+};
+
+const postSignup = (req, res, next) => {
+  User.findOne({ email: req.body.email })
+    .then(userDoc => {
+      if (userDoc) {
+        return res.redirect('/signup');
+      }
+      return bcrypt.hash(req.body.password, 12).then(hashedPassword => {
+        const user = new User({
+          name: req.body.name,
+          email: req.body.email,
+          password: hashedPassword,
+          cart: [],
+        });
+        return user.save().then(() => res.redirect('/login'));
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 module.exports = {
   getLogin,
   postLogin,
   postLogout,
+  getSignup,
+  postSignup,
 };

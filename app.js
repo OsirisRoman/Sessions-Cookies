@@ -94,17 +94,6 @@ const PORT = 3000;
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    return User.findOne();
-  })
-  .then(foundUser => {
-    if (!foundUser) {
-      const user = new User({
-        name: 'Osiris',
-        email: 'osirisr1994@gmail.com',
-        cart: [],
-      });
-      user.save();
-    }
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });
