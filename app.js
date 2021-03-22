@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const adminRoutes = require('./routes/admin');
 const publicRoutes = require('./routes/shop');
@@ -23,6 +24,8 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions',
 });
+
+const csfrProtection = csrf();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -54,16 +57,8 @@ app.use(
   })
 );
 
-//Before initializing the project, comment the
-//following section and run the server. This will
-// make the server to create a user for the first time.
-//If case you want to specify your own user parameters
-//you could modify these on lines 67 and 68 of this file.
-//After that stop the server and assign the user ID
-//to the constant userID variable to make te server
-//run without problems. Finally restart the server
-//and from now on it will run ok.
-/////////////////////////////////////////////////
+app.use(csfrProtection);
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -79,7 +74,12 @@ app.use((req, res, next) => {
       next();
     });
 });
-/////////////////////////////////////////////////
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use('/admin', adminRoutes);
 app.use(publicRoutes);

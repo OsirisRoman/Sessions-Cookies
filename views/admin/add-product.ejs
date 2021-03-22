@@ -5,6 +5,7 @@
       <h1>ADMIN Add Product</h1>
       <form class="product-form" action="/admin/<%if(editMode){%>edit-product/<%=product._id%><%} else {%>add-product<%}%>" method="POST" id="add-product-form">
         <div class="form-control">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
           <label for="productname">Product Name</label>
           <input type="text" name="name" id="productname" <%if(editMode){ %>value="<%=product.name%>"<% } %> />
           <label for="productimage">Image Url</label>
