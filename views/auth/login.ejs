@@ -5,15 +5,20 @@
     <%- include('../includes/navigation.ejs') %>
         <main>
         <form class="login-form" action="/login" method="POST">
-            <h1>Login Page</h1>
-            <div class="form-control">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-              <label for="email">E-Mail</label>
-              <input type="email" name="email" id="email"/>
-              <label for="password">Image Url</label>
-              <input type="password" name="password" id="password"/>
+            <h1 class="auth-title">Login Page</h1>
+            <% if(errorMessage.length > 0 ) {%>
+              <div class="user-message user-message--error"><%= errorMessage %></div>
+            <% } %>
+            <div class="auth-form">
+              <div class="form-control">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <label for="email">E-Mail</label>
+                <input type="email" name="email" id="email"/>
+                <label for="password">Image Url</label>
+                <input type="password" name="password" id="password"/>
+              </div>
+              <button type="submit">Login</button>
             </div>
-            <button type="submit">Login</button>
         </form>
 
 <%- include('../includes/end.ejs') %>

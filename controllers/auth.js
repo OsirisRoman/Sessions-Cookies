@@ -5,6 +5,7 @@ const getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login Page',
+    errorMessage: req.flash('error'),
   });
 };
 
@@ -12,10 +13,12 @@ const postLogin = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then(userDoc => {
       if (!userDoc) {
-        return res.redirect('/Signup');
+        req.flash('error', 'Invalid email or password');
+        return res.redirect('/login');
       }
       bcrypt.compare(req.body.password, userDoc.password).then(doMatch => {
         if (!doMatch) {
+          req.flash('error', 'Invalid email or password');
           return res.redirect('/login');
         }
         req.session.isLoggedIn = true;
@@ -46,6 +49,7 @@ const getSignup = (req, res, next) => {
   res.render('auth/signup', {
     path: '/signup',
     pageTitle: 'Signup Page',
+    errorMessage: req.flash('error'),
   });
 };
 
@@ -53,6 +57,10 @@ const postSignup = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then(userDoc => {
       if (userDoc) {
+        req.flash(
+          'error',
+          'This email is already in use, please pickup a different one'
+        );
         return res.redirect('/signup');
       }
       return bcrypt.hash(req.body.password, 12).then(hashedPassword => {

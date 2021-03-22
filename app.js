@@ -4,6 +4,7 @@ const path = require('path');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const adminRoutes = require('./routes/admin');
 const publicRoutes = require('./routes/shop');
@@ -58,6 +59,7 @@ app.use(
 );
 
 app.use(csfrProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.user) {
