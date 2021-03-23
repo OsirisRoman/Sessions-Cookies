@@ -102,7 +102,7 @@ const postUserOrders = (req, res, next) => {
 };
 
 const getUserOrders = (req, res, next) => {
-  Order.find()
+  Order.find({ user: req.user._id })
     .then(orders => {
       res.render('shop/orders', {
         pageTitle: 'Your Orders',

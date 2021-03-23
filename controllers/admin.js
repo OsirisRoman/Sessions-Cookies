@@ -45,7 +45,10 @@ const getEditProduct = (req, res, next) => {
 const postEditProduct = (req, res) => {
   const updatedProduct = req.body;
   updatedProduct.price = Math.round(updatedProduct.price * 100);
-  Product.findByIdAndUpdate(req.params.productId, updatedProduct)
+  Product.updateOne(
+    { _id: req.params.productId, user: req.user._id },
+    updatedProduct
+  )
     .then(() => {
       res.redirect('/admin/product-list');
     })
@@ -54,7 +57,7 @@ const postEditProduct = (req, res) => {
 
 const postDeleteProduct = (req, res) => {
   const productId = req.body.productId;
-  Product.findByIdAndRemove(productId)
+  Product.deleteOne({ _id: productId, user: req.user._id })
     .then(() => {
       res.redirect('/admin/product-list');
     })
@@ -62,7 +65,8 @@ const postDeleteProduct = (req, res) => {
 };
 
 const getProductList = (req, res, next) => {
-  Product.find()
+  Product.find({ user: req.user._id })
+    //Product.find()
     // Select method allow us to know which fields of
     //our object we want to retrieve. In this case the
     //retrieved product will have name, price and _id
