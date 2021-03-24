@@ -4,11 +4,11 @@
 
     <%- include('../includes/navigation.ejs') %>
         <main>
-        <form class="login-form" action="/login" method="POST">
+        <form class="login-form" action="/login" method="POST" novalidate>
             <h1 class="auth-title">Login Page</h1>
-            <% if(errorMessage.length > 0 ) {%>
-              <div class="user-message user-message--error"><%= errorMessage %></div>
-            <% } %>
+            <% errorMessage.forEach(error => {%>
+              <div class="user-message user-message--error"><%= error %></div><br>
+            <% }); %>
             <div class="auth-form">
               <div class="form-control">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>

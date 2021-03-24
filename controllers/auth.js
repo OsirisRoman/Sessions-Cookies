@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const { validationResult } = require('express-validator');
 
 const getLogin = (req, res, next) => {
   res.render('auth/login', {
@@ -11,6 +12,15 @@ const getLogin = (req, res, next) => {
 };
 
 const postLogin = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/login', {
+      path: '/login',
+      pageTitle: 'Login Page',
+      errorMessage: errors.errors.map(error => error.msg),
+    });
+  }
   User.findOne({ email: req.body.email })
     .then(userDoc => {
       if (!userDoc) {
@@ -55,6 +65,15 @@ const getSignup = (req, res, next) => {
 };
 
 const postSignup = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      path: '/signup',
+      pageTitle: 'Signup Page',
+      errorMessage: errors.errors.map(error => error.msg),
+    });
+  }
   User.findOne({ email: req.body.email })
     .then(userDoc => {
       if (userDoc) {
@@ -88,6 +107,15 @@ const getResetPassword = (req, res, next) => {
 };
 
 const postResetPassword = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/resetPassword', {
+      path: '/resetPassword',
+      pageTitle: 'Reset Password',
+      errorMessage: errors.errors.map(error => error.msg),
+    });
+  }
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       console.log(err);
@@ -138,6 +166,15 @@ const getUpdatePassword = (req, res, next) => {
 };
 
 const postUpdatePassword = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/reset-password', {
+      path: '/reset-password',
+      pageTitle: 'Reset Password',
+      errorMessage: errors.errors.map(error => error.msg),
+    });
+  }
   let user;
   User.findById(req.body.userId)
     .then(userDoc => {
