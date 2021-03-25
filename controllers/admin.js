@@ -1,14 +1,27 @@
 const Product = require('../models/product');
 
+const { validationResult } = require('express-validator');
+
 const getAddProduct = (req, res, next) => {
   res.render('admin/add-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editMode: false,
+    errorMessage: req.flash('error'),
   });
 };
 
 const postAddProduct = (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('admin/add-product', {
+      path: '/add/add-product',
+      pageTitle: 'Add Product',
+      editMode: false,
+      errorMessage: errors.errors.map(error => error.msg),
+    });
+  }
   //all values in req.body are strings
   //multipliying the price cast it to number
   req.body.price = Math.round(req.body.price * 100);
@@ -37,12 +50,24 @@ const getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editMode: true,
         product: product,
+        errorMessage: req.flash('error'),
       });
     })
     .catch(err => console.log(err));
 };
 
 const postEditProduct = (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('admin/add-product', {
+      path: '/admin/edit-product',
+      pageTitle: 'Edit Product',
+      editMode: true,
+      product: { ...req.body, _id: req.params.productId },
+      errorMessage: errors.errors.map(error => error.msg),
+    });
+  }
   const updatedProduct = req.body;
   updatedProduct.price = Math.round(updatedProduct.price * 100);
   Product.updateOne(
