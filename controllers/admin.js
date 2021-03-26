@@ -37,11 +37,6 @@ const postAddProduct = (req, res) => {
 
 const getEditProduct = (req, res, next) => {
   const productId = req.params.productId;
-  if (!productId) {
-    //This should be replaced by an
-    //error handling in the future
-    return res.redirect('/');
-  }
   Product.findById(productId)
     .then(product => {
       product.price = (product.price / 100).toFixed(2);
@@ -92,22 +87,6 @@ const postDeleteProduct = (req, res) => {
 const getProductList = (req, res, next) => {
   Product.find({ user: req.user._id })
     //Product.find()
-    // Select method allow us to know which fields of
-    //our object we want to retrieve. In this case the
-    //retrieved product will have name, price and _id
-    //properties. In case we do not want the _id
-    //property in our result, it can be achieved by
-    //explicitly calling this format .select('name price -_id')
-
-    //.select('name price')
-    // Populate method insert the data relation in the
-    //specified property, in this case user data inside
-    //the user property, the second parameter filter the
-    //properties of our relation we want to get, in this
-    //case we are telling that we do not want all users
-    //data, we just want its name and _id
-
-    //.populate('user', 'name')
     .then(products => {
       products.forEach(product => {
         product.price = (product.price / 100).toFixed(2);
