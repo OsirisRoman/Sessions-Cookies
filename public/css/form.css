@@ -1,10 +1,10 @@
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-   -webkit-appearance: none;
-   margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
-input[type="number"] {
-   -moz-appearance: textfield;
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 .product-form {
   width: 20rem;
@@ -30,6 +30,11 @@ input[type="number"] {
 .form-control input:focus,
 .form-control textarea:focus {
   outline-color: #00695c;
+}
+
+.form-control input.invalid,
+.form-control textarea.invalid {
+  border-color: red;
 }
 button {
   font: inherit;

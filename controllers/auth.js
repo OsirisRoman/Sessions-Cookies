@@ -7,7 +7,8 @@ const getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login Page',
-    errorMessage: req.flash('error'),
+    errors: req.flash('error'),
+    oldValues: undefined,
   });
 };
 
@@ -18,7 +19,11 @@ const postLogin = (req, res, next) => {
     return res.status(422).render('auth/login', {
       path: '/login',
       pageTitle: 'Login Page',
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
+      oldValues: req.body,
     });
   }
   req.session.isLoggedIn = true;
@@ -44,7 +49,8 @@ const getSignup = (req, res, next) => {
   res.render('auth/signup', {
     path: '/signup',
     pageTitle: 'Signup Page',
-    errorMessage: req.flash('error'),
+    errors: req.flash('error'),
+    oldValues: undefined,
   });
 };
 
@@ -55,7 +61,11 @@ const postSignup = (req, res, next) => {
     return res.status(422).render('auth/signup', {
       path: '/signup',
       pageTitle: 'Signup Page',
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
+      oldValues: req.body,
     });
   }
 
@@ -80,7 +90,8 @@ const getResetPassword = (req, res, next) => {
   res.render('auth/resetPassword', {
     path: '/reset',
     pageTitle: 'Reset Password',
-    errorMessage: req.flash('error'),
+    errors: req.flash('error'),
+    oldValues: undefined,
   });
 };
 
@@ -91,7 +102,11 @@ const postResetPassword = (req, res, next) => {
     return res.status(422).render('auth/resetPassword', {
       path: '/reset',
       pageTitle: 'Reset Password',
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
+      oldValues: req.body,
     });
   }
   crypto.randomBytes(32, (err, buffer) => {
@@ -117,14 +132,19 @@ const getUpdatePassword = (req, res, next) => {
     return res.status(422).render('auth/resetPassword', {
       path: '/Reset Password',
       pageTitle: 'Reset Password',
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
+      oldValues: undefined,
     });
   }
   res.render('auth/updatePassword', {
     path: '/updatePassword',
     pageTitle: 'Update Password',
-    errorMessage: req.flash('error'),
+    errors: req.flash('error'),
     userId: req.targetUser._id.toString(),
+    oldValues: undefined,
   });
 };
 
@@ -135,8 +155,12 @@ const postUpdatePassword = (req, res, next) => {
     return res.status(422).render('auth/updatePassword', {
       path: '/updatePassword',
       pageTitle: 'Update Password',
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
       userId: req.body.userId,
+      oldValues: req.body,
     });
   }
   let user;

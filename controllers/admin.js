@@ -7,7 +7,8 @@ const getAddProduct = (req, res, next) => {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editMode: false,
-    errorMessage: req.flash('error'),
+    errors: req.flash('error'),
+    oldValues: undefined,
   });
 };
 
@@ -19,7 +20,11 @@ const postAddProduct = (req, res) => {
       path: '/add/add-product',
       pageTitle: 'Add Product',
       editMode: false,
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
+      oldValues: req.body,
     });
   }
   //all values in req.body are strings
@@ -45,7 +50,8 @@ const getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editMode: true,
         product: product,
-        errorMessage: req.flash('error'),
+        errors: req.flash('error'),
+        oldValues: undefined,
       });
     })
     .catch(err => console.log(err));
@@ -60,7 +66,11 @@ const postEditProduct = (req, res) => {
       pageTitle: 'Edit Product',
       editMode: true,
       product: { ...req.body, _id: req.params.productId },
-      errorMessage: errors.errors.map(error => error.msg),
+      errors: errors.errors.map(error => ({
+        param: error.param,
+        msg: error.msg,
+      })),
+      oldValues: undefined,
     });
   }
   const updatedProduct = req.body;

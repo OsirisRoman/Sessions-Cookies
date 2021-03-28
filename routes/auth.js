@@ -1,5 +1,5 @@
 const express = require('express');
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
@@ -11,6 +11,7 @@ const router = express.Router();
 const loginEmailValidation = body('email')
   .isEmail()
   .withMessage('Email is not valid')
+  .bail()
   .custom((value, { req }) => {
     return User.findOne({ email: value }).then(userDoc => {
       if (!userDoc) {
@@ -32,19 +33,20 @@ const usernameValidation = body('name')
   .isLength({ min: 1 })
   .withMessage("User name can't be empty.");
 
-const passwordAndConfirmPasswordValidation = body('password')
-  .isLength({ min: 5 })
-  .withMessage('Password is too short/insecure')
-  .custom((value, { req }) => {
-    if (value !== req.body.confirmedPassword) {
-      throw new Error('Passwords have to match.');
-    }
-    return true;
-  });
+// const passwordAndConfirmPasswordValidation = body('password')
+//   .isLength({ min: 5 })
+//   .withMessage('Password is too short/insecure')
+//   .custom((value, { req }) => {
+//     if (value !== req.body.confirmedPassword) {
+//       throw new Error('Passwords have to match.');
+//     }
+//     return true;
+//   });
 
 const emailNonExistanceValidation = body('email')
   .isEmail()
   .withMessage('Email is not valid')
+  .bail()
   .custom((value, { req }) => {
     return User.findOne({ email: value }).then(userDoc => {
       if (userDoc) {
@@ -58,6 +60,7 @@ const emailNonExistanceValidation = body('email')
 const emailExistanceValidation = body('email')
   .isEmail()
   .withMessage('Email is not valid')
+  .bail()
   .custom((value, { req }) => {
     return User.findOne({ email: value }).then(userDoc => {
       if (!userDoc) {
@@ -68,9 +71,22 @@ const emailExistanceValidation = body('email')
     });
   });
 
-const tokenValidation = body('pasword').custom((value, { req }) => {
+const passwordValidation = body('password')
+  .isLength({ min: 5 })
+  .withMessage('Password is too short/insecure');
+
+const confirmedPasswordValidation = body('confirmedPassword').custom(
+  (value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error('Password and Confirmed Password must be equal.');
+    }
+    return true;
+  }
+);
+
+const tokenValidation = param('token').custom((value, { req }) => {
   return User.findOne({
-    resetToken: req.params.token,
+    resetToken: value,
     resetTokenExpiration: { $gt: Date.now() },
   }).then(userDoc => {
     if (!userDoc) {
@@ -105,9 +121,11 @@ router.post(
   //checks email to be a valid email,
   //checks email non-existance
   emailNonExistanceValidation,
-  //checks password length > 5 and
+  //checks password length > 5
+  passwordValidation,
   //checks password-confirmedPassword equality
-  passwordAndConfirmPasswordValidation,
+  confirmedPasswordValidation,
+  //passwordAndConfirmPasswordValidation,
   authController.postSignup
 );
 
@@ -129,9 +147,11 @@ router.get(
 
 router.post(
   '/update-password',
-  //checks password length > 5 and
+  //checks password length > 5
+  passwordValidation,
   //checks password-confirmedPassword equality
-  passwordAndConfirmPasswordValidation,
+  confirmedPasswordValidation,
+  //passwordAndConfirmPasswordValidation,
   authController.postUpdatePassword
 );
 
