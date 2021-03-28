@@ -11,6 +11,7 @@ const router = express.Router();
 const loginEmailValidation = body('email')
   .isEmail()
   .withMessage('Email is not valid')
+  .normalizeEmail()
   .bail()
   .custom((value, { req }) => {
     return User.findOne({ email: value }).then(userDoc => {
@@ -33,19 +34,10 @@ const usernameValidation = body('name')
   .isLength({ min: 1 })
   .withMessage("User name can't be empty.");
 
-// const passwordAndConfirmPasswordValidation = body('password')
-//   .isLength({ min: 5 })
-//   .withMessage('Password is too short/insecure')
-//   .custom((value, { req }) => {
-//     if (value !== req.body.confirmedPassword) {
-//       throw new Error('Passwords have to match.');
-//     }
-//     return true;
-//   });
-
 const emailNonExistanceValidation = body('email')
   .isEmail()
   .withMessage('Email is not valid')
+  .normalizeEmail()
   .bail()
   .custom((value, { req }) => {
     return User.findOne({ email: value }).then(userDoc => {
@@ -60,6 +52,7 @@ const emailNonExistanceValidation = body('email')
 const emailExistanceValidation = body('email')
   .isEmail()
   .withMessage('Email is not valid')
+  .normalizeEmail()
   .bail()
   .custom((value, { req }) => {
     return User.findOne({ email: value }).then(userDoc => {

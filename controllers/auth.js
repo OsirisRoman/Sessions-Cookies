@@ -4,6 +4,9 @@ const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 
 const getLogin = (req, res, next) => {
+  if (req.session.isLoggedIn) {
+    return res.redirect('/');
+  }
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login Page',
