@@ -14,20 +14,33 @@ const loginEmailValidation = body('email')
   .normalizeEmail()
   .bail()
   .custom((value, { req }) => {
-    return User.findOne({ email: value }).then(userDoc => {
-      if (!userDoc) {
-        return Promise.reject('Invalid email or password');
-      }
-      return bcrypt
-        .compare(req.body.password, userDoc.password)
-        .then(doMatch => {
-          if (!doMatch) {
-            return Promise.reject('Invalid email or password');
-          } else {
-            req.session.user = userDoc._id;
-          }
-        });
-    });
+    return User.findOne({ email: value })
+      .then(userDoc => {
+        if (!userDoc) {
+          return Promise.reject('Invalid email or password');
+        }
+        return bcrypt
+          .compare(req.body.password, userDoc.password)
+          .then(doMatch => {
+            if (!doMatch) {
+              return Promise.reject('Invalid email or password');
+            } else {
+              req.session.user = userDoc._id;
+            }
+          })
+          .catch(err => {
+            //console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+          });
+      })
+      .catch(err => {
+        //console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
   });
 
 const usernameValidation = body('name')
@@ -40,13 +53,20 @@ const emailNonExistanceValidation = body('email')
   .normalizeEmail()
   .bail()
   .custom((value, { req }) => {
-    return User.findOne({ email: value }).then(userDoc => {
-      if (userDoc) {
-        return Promise.reject(
-          'This email is already in use, please pickup a different one'
-        );
-      }
-    });
+    return User.findOne({ email: value })
+      .then(userDoc => {
+        if (userDoc) {
+          return Promise.reject(
+            'This email is already in use, please pickup a different one'
+          );
+        }
+      })
+      .catch(err => {
+        //console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
   });
 
 const emailExistanceValidation = body('email')
@@ -55,13 +75,20 @@ const emailExistanceValidation = body('email')
   .normalizeEmail()
   .bail()
   .custom((value, { req }) => {
-    return User.findOne({ email: value }).then(userDoc => {
-      if (!userDoc) {
-        return Promise.reject('The email has not been registered yet');
-      } else {
-        req.targetUser = userDoc;
-      }
-    });
+    return User.findOne({ email: value })
+      .then(userDoc => {
+        if (!userDoc) {
+          return Promise.reject('The email has not been registered yet');
+        } else {
+          req.targetUser = userDoc;
+        }
+      })
+      .catch(err => {
+        //console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
   });
 
 const passwordValidation = body('password')
@@ -81,15 +108,22 @@ const tokenValidation = param('token').custom((value, { req }) => {
   return User.findOne({
     resetToken: value,
     resetTokenExpiration: { $gt: Date.now() },
-  }).then(userDoc => {
-    if (!userDoc) {
-      return Promise.reject(
-        'The unique link has expired, please generate a new one.'
-      );
-    } else {
-      req.targetUser = userDoc;
-    }
-  });
+  })
+    .then(userDoc => {
+      if (!userDoc) {
+        return Promise.reject(
+          'The unique link has expired, please generate a new one.'
+        );
+      } else {
+        req.targetUser = userDoc;
+      }
+    })
+    .catch(err => {
+      //console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 });
 
 router.get('/login', authController.getLogin);

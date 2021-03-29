@@ -62,6 +62,13 @@ app.use(csfrProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+app.use((req, res, next) => {
+  // throw new Error('dummy error');
   if (!req.session.user) {
     return next();
   }
@@ -72,22 +79,28 @@ app.use((req, res, next) => {
       next();
     })
     .catch(err => {
-      console.log(err);
-      next();
+      //console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
-});
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
 });
 
 app.use('/admin', adminRoutes);
 app.use(publicRoutes);
 app.use(authRoutes);
 
+app.get('/500', errorControler.get500);
+
 app.use(errorControler.get404);
+
+app.use((err, req, res, next) => {
+  // res.redirect('/500');
+  res.status(500).render('500ServerError', {
+    pageTitle: 'Error!',
+    path: '',
+  });
+});
 
 const PORT = 3000;
 

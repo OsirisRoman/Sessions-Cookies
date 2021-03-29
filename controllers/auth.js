@@ -33,7 +33,10 @@ const postLogin = (req, res, next) => {
   //req.session.user = req.userId;
   req.session.save(err => {
     if (err) {
-      console.log(err);
+      //console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     }
     res.redirect('/');
   });
@@ -42,7 +45,10 @@ const postLogin = (req, res, next) => {
 const postLogout = (req, res, next) => {
   req.session.destroy(err => {
     if (err) {
-      console.log(err);
+      //console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     }
     res.redirect('/login');
   });
@@ -85,7 +91,10 @@ const postSignup = (req, res, next) => {
     })
     .then(() => res.redirect('/login'))
     .catch(err => {
-      console.log(err);
+      //console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -180,7 +189,10 @@ const postUpdatePassword = (req, res, next) => {
       res.redirect('/login');
     })
     .catch(err => {
-      console.log(err);
+      //console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
